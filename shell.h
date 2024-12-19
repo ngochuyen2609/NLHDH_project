@@ -5,6 +5,8 @@
 #define DO_DAI_LENH 1024
 #define SO_THAM_SO_TOI_DA 100
 #define MAX_TIENS_TRINH 100
+#define MAX_CUSTOM_PATH 8192
+extern char customPath[MAX_CUSTOM_PATH]; 
 
 typedef struct {
     HANDLE handle;        
@@ -13,6 +15,7 @@ typedef struct {
     int status;          
 } TienTrinh;
 
+void loadNtFunctions();
 void themTienTrinh(HANDLE handle, DWORD pid, char *name);
 void lietKeTienTrinh();
 void dungTienTrinh(DWORD pid);

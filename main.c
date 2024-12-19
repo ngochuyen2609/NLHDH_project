@@ -2,10 +2,15 @@
 #include <stdio.h>
 #include <string.h>
 
+char customPath[MAX_CUSTOM_PATH] = ""; 
+
 int main() {
     char lenh[DO_DAI_LENH];
     hienThiTroGiup();  // Hiển thị trợ giúp ban đầu
     caiDatXuLyTinHieu();  // Cài đặt xử lý Ctrl+C
+
+    loadNtFunctions(); // Load các hàm cần thiết từ ntdll.dll
+    printf("NtSuspendProcess and NtResumeProcess loaded successfully.\n");
 
     while (1) {
         char lenh[DO_DAI_LENH];

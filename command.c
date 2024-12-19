@@ -1,6 +1,8 @@
 #include "shell.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <windows.h>
 
 void hienThiThuMucHienTai() {
     system("dir");
@@ -27,26 +29,44 @@ void phanTichLenh(char *lenh, char **thamSo, int *cheDoNen) {
 void xemPath() {
     char *path = getenv("PATH");
     if (path) {
-        printf("Current PATH:\n%s\n", path);
+        printf("PATH hiện tại:\n%s\n", path);
     } else {
-        fprintf(stderr, "Cannot retrieve the PATH variable.\n");
+        fprintf(stderr, "⚠ Không thể lấy biến PATH.\n");
     }
 }
 
 // Thêm đường dẫn vào PATH
 void themPath(char *duongDan) {
-    char *path = getenv("PATH");
-    if (path) {
-        char pathMoi[DO_DAI_LENH];
-        snprintf(pathMoi, sizeof(pathMoi), "%s;%s", path, duongDan);
-        if (_putenv_s("PATH", pathMoi) == 0) {
-            printf("Đã thêm '%s' vào PATH.\n", duongDan);
-        } else {
-            fprintf(stderr, "Không thể thêm '%s' vào PATH.\n", duongDan);
-        }
-    } else {
-        fprintf(stderr, "Không thể lấy biến PATH.\n");
+    if (duongDan == NULL || strlen(duongDan) == 0) {
+        printf("⚠ Đường dẫn không hợp lệ. Hãy thử lại.");
+        return;
     }
+
+    // Kiểm tra xem đường dẫn có phải là thư mục hợp lệ
+    DWORD attributes = GetFileAttributes(duongDan);
+    if (attributes == INVALID_FILE_ATTRIBUTES || !(attributes & FILE_ATTRIBUTE_DIRECTORY)) {
+        fprintf(stderr, "⚠ Đường dẫn '%s' không hợp lệ hoặc không tồn tại.\n", duongDan);
+        return;
+    }
+
+    if (strstr(customPath, duongDan)) {
+        printf("⚠ Đường dẫn '%s' đã tồn tại trong PATH tuỳ chỉnh.\n", duongDan);
+        return;
+    }
+
+    // Thêm đường dẫn vào customPath
+    if (strlen(customPath) + strlen(duongDan) + 2 > sizeof(customPath)) {
+        fprintf(stderr, "⚠ Không thể thêm '%s', độ dài PATH vượt quá giới hạn.\n", duongDan);
+        return;
+    }
+
+    if (strlen(customPath) > 0) {
+        strcat(customPath, ";");
+    }
+    strcat(customPath, duongDan);
+
+    printf("✔ Đã thêm '%s' vào PATH tuỳ chỉnh.\n", duongDan);
+    printf("PATH hiện tại:\n%s\n", customPath);
 }
 
 void thucHienFileBat(char *tenFile) {
